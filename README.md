@@ -1,4 +1,4 @@
-## ReversedGoodix
+## Automated script to patch Goodix blobs after Android Q
 
 ## The problem
 "Parcel object increased from 104 to 120 bytes, and many functions in both libraries had two Parcel objects next to each other in their stack.
@@ -53,7 +53,7 @@ F DEBUG   :       #10 pc 000000000008b3f8  /apex/com.android.runtime/lib64/bioni
 
 So when the problem occur, I can immediately think of Goodix Parcel patch for Android Q, since functions are being increased in size. 
 
-That being said, I found it kinda weird that the blobs does not need it on the past Android version.
+That being said, I found it kinda weird that the blobs does not need it in the past Android version.
 
 However, let's roll.
 
