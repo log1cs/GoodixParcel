@@ -3,10 +3,10 @@ import re
 from pwnlib.asm import disasm, asm
 import pprint
 
-asm_file = "DATA/fingerprint.msm8998.so.asm"
-functions_file = "DATA/fingerprint.msm8998.so_f"
+asm_file = "asm/libfp_client.so.asm"
+functions_file = "grep/libfp_client.so_f"
 truth_file = None # "libfp_client5118m_new.asm"
-output_file = "WORKING/fingerprint.msm8998.so"
+output_file = "libs/libfp_client.so"
 
 # Helpers for patching
 def unpack_instr(s):
