@@ -9,7 +9,7 @@ Source: https://github.com/jabashque/proprietary_vendor_leeco/commit/652378f8839
 
 ## Summary
 
-On Android 14, Goodix just straight showing a stack corruption in the logcat everytime it tries to 
+On modern Android versions, Goodix just straight up showing a stack corruption in the logcat everytime it tries to 
 read fingerprint in Fingerprint setup:
 
 ```
@@ -51,11 +51,7 @@ F DEBUG   :       #09 pc 0000000000003d18  /vendor/bin/hw/android.hardware.biome
 F DEBUG   :       #10 pc 000000000008b3f8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+104) (BuildId: bbbe5750122b349e49dac3085bb24953)
 ```
 
-So when the problem occur, I can immediately think of Goodix Parcel patch for Android Q, since functions are being increased in size. 
-
-That being said, I found it kinda weird that the blobs does not need it in the past Android version.
-
-However, let's roll.
+We'll dig down on fixing that issue in this guide.
 
 ## Requirements 
 
@@ -80,9 +76,9 @@ python3 -m pip install --upgrade pwntools
 
 * Open Ghidra.
 
-* Create a new project and import all of the Goodix fingerprint libraries into that project.
+* Create a new project and import all of the Goodix `libfp_client` (or whatever similar to it) into that project.
 
-* You have to analyze all of them. It's required.
+* Analyze it.
 
 * Export the library to C/C++ (Go to File -> Export Program...)
 
@@ -92,19 +88,19 @@ python3 -m pip install --upgrade pwntools
 
   * Output File: Wherever you want to export the codes to. In my case, I'll extract to `exported` folder.
 
-* After all blobs are exported into C format, you will get a file that ends in .c format.
+* After the library is exported, you will get a file that ends with `.c` format.
 
-* Run this for each file.
+* Run this for `libfp_client`.
 
 ```
-grep -B10 "Parcel aPStack" <path_to_exported_library>.c | grep "//" > <output_path>_f
+grep -B10 "Parcel aPStack" <path_to_your_libfp_client>.c | grep "//" > <output>_f
 ```
 
-This may returns line with `Warning` in, so remove every line contains that.
+This may returns line with `Warning` in, so remove every line contains that string.
 
 ## Section B.
 
-* Now you have to disassemble all libraries.
+* Now you have to disassemble the library.
 
 * First of all, let's install AARCH64 toolchain.
 
@@ -112,20 +108,20 @@ This may returns line with `Warning` in, so remove every line contains that.
 sudo apt-get install binutils-aarch64-linux-gnu
 ```
 
-* Then disassemble every file using this command:
+* Then disassemble `libfp_client` using this command:
 
 ```
-aarch64-linux-gnu-objdump -d <path_to_library>.so > <path_to_output_asm>.asm
+aarch64-linux-gnu-objdump -d <path_to_your_libfp_client>.so > <path_to_your_asm_libfp_client>.asm
 ```
 
 ## Section C.
 
-* Replace config lines in `script.py` for each file.
+* Replace config lines in `script.py`.
 
 ```
-asm_file = "<path_to_output_asm>.asm"
-functions_file = "<output_path>_f"
-output_file = "<path_to_library>.so"
+asm_file = "<path_to_your_asm_libfp_client>.asm"
+functions_file = "<output>_f"
+output_file = "<path_to_your_libfp_client>.so"
 ```
 
 * Run the script:
@@ -134,7 +130,7 @@ output_file = "<path_to_library>.so"
 python script.py
 ```
 
-This will overwrite `<path_to_library>`.
+This will overwrite `<path_to_your_libfp_client>`.
 
 There might be something like `FAIL` or `FAIL1`, but just ignore it because it won't damage anything.
 
