@@ -51,11 +51,7 @@ F DEBUG   :       #09 pc 0000000000003d18  /vendor/bin/hw/android.hardware.biome
 F DEBUG   :       #10 pc 000000000008b3f8  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+104) (BuildId: bbbe5750122b349e49dac3085bb24953)
 ```
 
-So when the problem occur, I can immediately think of Goodix Parcel patch for Android Q, since functions are being increased in size. 
-
-That being said, I found it kinda weird that the blobs does not need it in the past Android version.
-
-However, let's roll.
+Let's roll.
 
 ## Requirements 
 
